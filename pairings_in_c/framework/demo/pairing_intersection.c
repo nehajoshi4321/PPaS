@@ -17,13 +17,13 @@
 
 void test_corectness(bool &reply, string c, string s, bbkem_public params, bbkem_public upsk) {
 	
-	repyl = true;
+	reply = true;
 	ecfp_encoding ec1, ec2;
         ecfp_pow(&ec1, &s, params.k1);
 	ecfp2_pow(&ec2, &c, params.k2);
 	
 	for(int i = 0; i < ec1.size(); i++){
-		if(ec[i] != (ec1[i] & ec2[i]))){
+		if(ec1[i] ^ ec2[i]){
 			reply = false;
 			break;
 		}
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 	bbkem_public params;
 	bbkem_msk msk;
 	bbkem_pk upk;
-	const char *id = "Bob";
+	const char *id = argv[0];
 
 	cprng_get_bytes(key1, 16);
 
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 	test_correctness(reply, argv[1], argv[2], params, upk);
 	if(reply){
 		// Setting environment variables in case the elements are equal.
-		setenv("_k", (decapsulate_key(key1, &ct, &params, &upk)));
+		setenv("_c", (decapsulate_key(key1, &ct, &params, &upk)));
 		setenv("_j", (decapsulate_key(key2, &ct, &params, argv[1])));
 		setenv("_k", (decapsulate_key(key2, &ct, &params, argv[2])));
 	}
